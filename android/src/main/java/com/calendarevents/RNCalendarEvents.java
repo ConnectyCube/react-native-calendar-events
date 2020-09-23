@@ -824,16 +824,16 @@ public class RNCalendarEvents extends ReactContextBaseJavaModule implements Perm
 
         for (int i = 0; i < attendees.size(); i++) {
             ReadableMap attendee = attendees.getMap(i);
-            ReadableType type = attendee.getType("url");
-            ReadableType fNameType = attendee.getType("firstName");
+            ReadableType type = attendee.getType("email");
+            ReadableType fNameType = attendee.getType("name");
             if (type == ReadableType.String) {
                 ContentValues attendeeValues = new ContentValues();
                 attendeeValues.put(CalendarContract.Attendees.EVENT_ID, eventID);
-                attendeeValues.put(CalendarContract.Attendees.ATTENDEE_EMAIL, attendee.getString("url"));
+                attendeeValues.put(CalendarContract.Attendees.ATTENDEE_EMAIL, attendee.getString("email"));
                 attendeeValues.put(CalendarContract.Attendees.ATTENDEE_RELATIONSHIP, CalendarContract.Attendees.RELATIONSHIP_ATTENDEE);
 
                 if (fNameType == ReadableType.String) {
-                    attendeeValues.put(CalendarContract.Attendees.ATTENDEE_NAME, attendee.getString("firstName"));
+                    attendeeValues.put(CalendarContract.Attendees.ATTENDEE_NAME, attendee.getString("name"));
                 }
                 resolver.insert(CalendarContract.Attendees.CONTENT_URI, attendeeValues);
             }
