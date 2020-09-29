@@ -115,6 +115,7 @@ RCT_EXPORT_MODULE()
     NSString *recurrence = [RCTConvert NSString:details[_recurrence]];
     NSDictionary *recurrenceRule = [RCTConvert NSDictionary:details[_recurrenceRule]];
     NSString *availability = [RCTConvert NSString:details[_availability]];
+    NSArray *invitees = [RCTConvert NSArray:details[_attendees]];
 
     if (eventId) {
         calendarEvent = (EKEvent *)[self.eventStore calendarItemWithIdentifier:eventId];
@@ -159,6 +160,29 @@ RCT_EXPORT_MODULE()
 
     if (alarms) {
         calendarEvent.alarms = [self createCalendarEventAlarms:alarms];
+    }
+
+    if (invitees) {
+        NSMutableArray *attendees = [NSMutableArray new];
+        for (int i = 0; i < [invitees count]; i++) {
+            Class className = NSClassFromString(@"EKAttendee");
+            id attendee = [className new];
+            NSDictionary *invitee = [invitees objectAtIndex:i];
+            NSString *name = [invitee valueForKey:@"name"];
+            NSString *email = [invitee valueForKey:@"email"];
+
+            [attendee setValue:email forKey:@"emailAddress"];
+            if(name && ![name isEqualToString:@"(null)"]) {
+                [attendee setValue:name forKey:@"firstName"];
+            }
+            else {
+                [attendee setValue:email forKey:@"firstName"];
+            }
+
+            [attendees addObject:attendee];
+        }
+
+        [calendarEvent setValue:attendees forKey:_attendees];
     }
 
     if (recurrence) {
